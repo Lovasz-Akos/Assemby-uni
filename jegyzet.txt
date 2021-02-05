@@ -1,0 +1,120 @@
+Akkumlátor regiszterek
+    AX [16] (AH, AL) [8, 8]     //két felé osztjuk az A 16 bitjét, 8-8 bitre, 
+                                  és elnevezzük AH-nak és AL-nek, ezek közösen az AX-et adják ki
+    BX [16] (BH, BL) [8, 8]
+    CX [16] (CH, CL) [8, 8]
+    DX [16] (DH, DL) [8, 8]
+
+    Flag [16] //az akkumlátor-ban elvégzett műveletekhez kapcsolódó értéket vesz fel 
+                (kivéve amelyk nem, mert azért ez nem eszik meg 16 bitet)
+
+Index regiszterek
+    SI [16] - Source
+    DI [16] - Destination
+
+
+Szegmens regiszterek
+    CS [16] - Code
+    DS [16] - Data
+    SS [16] - Stack
+    ES [16] - Extra
+
+
+Pointerek
+    IP [16] - Instruction
+    SP [16] - Stack
+    BP [16] - Base
+
+
+-----------------------------------------------------------------------------------------------
+
+
+Memória párossával van 16 biten, és csak páros címet szeretünk, a páratlan az jön mellé.
+(ha nem ,akkor pl az 5höz a 2 jár)
+[páratlan][páros]
+    
+    [1][0]
+    [3][2]
+    [5][4]
+
+Adatmozgató utasítások
+    MOV : cél, forrás - mozgatás   
+    XCHG : cél, forrás - Exchange, csere
+    PUSH/POP  - Stack operátorok (ha warning ot ad mert fasz, push word ptr [cím] mert nem 16 bitet akar)
+    PUSHF/POPF - push és pop ami a flag értékét teszi és veszi a stackbe/ből
+    IN - I/O területről beírunk processzorra
+    OUT - I/0 területre kiírunk
+
+
+    MOV pl:    
+
+        MOV BX, AX
+        MOV DL, AH      
+        
+        MOV AL, 5 (teszek az AL-be konstans értéket (8bit))
+       
+        MOV AX, 35-3+(8*2) (lehet kifejezés is, ha a fordító futáskor ki tudja számolni)
+       
+        MOV CX, 3B6FH       <- a H-val jelzem hogy hexadecimális (B-vel h bináris (MOV AX, 00110000B)) értéket teszek be:
+                               CH-ba teszi a 3B-t, CL-be teszi a 6F-et (MOV CH, 3BH; MOV CL, 6FH)
+
+            Direkt címzés
+                MOV AL, [1234]      <- memória címet is adhatok
+                MOV [55H], CL       <- memóriából regiszterbe, és regiszterből memóriába is lehet
+
+            Indirekt címzés
+                MOV AL, [BX]
+                MOV [SI], DH        <- itt az SI az offset DS címzéshez, ezt bele a DH-ba
+                MOV AX, [DI]        <- 2 byte (16 bit) kerül az AX-be, processzor függő hogy milyen sorrendben érkeznek a byte-ok
+
+            Indexelt címzés
+                MOV SI, [DI + 12]   <- a DI címben lévő cím + 12 eredmény címen lévő tartalmat tesszük (+1 mert 16bit) az SI-be
+            
+            Indirekt Indexelt Címzés
+                MOV [SI + BX], BL
+
+                MOV AL, ES:[BX]     <- megadhatom, hogy mit használjon offset ként, itt ES. Ha nem adok akkor mindig a DS-t használja
+                MOV SI, [BP]
+                MOV DS:[BP], CX
+
+            DS-be konstans értéket nem írhatunk
+                !MOV DS, 1234!
+
+                MOV AX, 1234
+                MOV DS, AX          <- így lehet
+
+
+    PUSH/POP pl:
+
+        PUSH BX
+        PUSH CX             <- de ha utánna POP BX, POP CX, akkor fordítva írja vissza, sőt mehetnek a flagbe is
+
+    IN/OUT pl:
+
+        IN AL, direkt cím (0 - FFH)
+        IN AX, [DX]
+
+        OUT direkt cím (0 - FFH), AL
+        OUT [DX], AX
+
+
+
+Memóriából memóriába direkt módon nem mozgathatok értékeket (csak úgy mint DS-be, 2 lépésben)
+// az egycímes processzorok esetén //
+
+   
+
+
+A {MOV [BX], 5} (ha a BX 2), akkor most BL-be teszed, mert a BX 2-re mutat, és 8 bitre írod, 
+                             vagy 3,2-re és a 3-at kitöltöd 0-val 16 biten? -Hát a fordító eldönti és warning xd
+
+Megoldás: MOV BYTE PTR [BX], 5  <- megmondja a mov-nak, hogy ez csak 8bitre kell betenni
+
+Ha a stackből kéne valami (nem a tetejéről) akkor     
+                                    
+    MOV BP, SP
+    MOV AX, [BP+16]
+    MOV [BP+10], CX (ahol a 10 egyértelműen annyi amennyi épp kéne, duh)
+
+
+I/O eszközök maximum 3FF címen lehettek, 16 bitből a felső 6ot mindig 0-nak tekintik
