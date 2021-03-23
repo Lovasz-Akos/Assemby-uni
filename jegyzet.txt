@@ -38,13 +38,13 @@ Memória párossával van 16 biten, és csak páros címet szeretünk, a páratl
     [5][4]
 
 Adatmozgató utasítások
-    MOV : cél, forrás - mozgatás   
-    XCHG : cél, forrás - Exchange, csere
+    MOV : cél, forrás - mozgatás a forrásból a célba.
+    XCHG : cél, forrás - Csere, a cél és a forrás között
     PUSH/POP  - Stack operátorok (ha warning ot ad mert fasz, push word ptr [cím] mert nem 16 bitet akar)
     PUSHF/POPF - push és pop ami a flag értékét teszi és veszi a stackbe/ből
     IN - I/O területről beírunk processzorra
     OUT - I/0 területre kiírunk
-
+ 
 
     MOV pl:    
 
