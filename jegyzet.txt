@@ -118,3 +118,215 @@ Ha a stackből kéne valami (nem a tetejéről) akkor
 
 
 I/O eszközök maximum 3FF címen lehettek, 16 bitből a felső 6ot mindig 0-nak tekintik
+
+Aritmetikai utasítások
+    ADD : cél, forrás - összeadás, a cél-ban tárolja el az eredményt.
+    ADC : cél, forrás - összeadás, a carry bit-el együtt, a cél-ban tárolja el az eredményt.
+    SUB : cél, forrás - kivonás, a cél-ban tárolja el az eredményt.
+    SBB : cél, forrás - kivonás, a carry bit-el együtt, a cél-ban tárolja el az eredményt.
+    INC : cél - inkrementálja az adott elemet (+1)
+    DEC : cél - dekrementálja az adott elemet (-1)
+    NEG : cél - előjelváltás / kicseréli a kettes komplemensével
+    MUL : cél, forrás - a cél csak 8 vagy 16 bites érték lehet, sosem konstans. ha 8 bites akkor az AL-el szorozza, ha 16bites akkor az AX-el 
+                                                                 (mármint hogy az egész AX ha 16 vagy fele AX, azaz AL-el 8-nál)
+
+                        Ha 8bites értéket szorzok, az AX fogja tárolni, mert biztosan 16 bites lesz az eredmény, az AL meg ugye elveszik.
+                        Ha 16 bites értéket szorzok, akkor a szorzat felső része a DX-be kerül, az alsó rész meg az AX-be.
+
+    IMUL: cél, forrás - egyezik a MUL-al, de előjeles értékek szorzására alkalmas
+    DIV : cél, forrás - osztás, legrosszabb esetben a 16 bites osztás marad 16 bites. A hányados az AL-be, a maradék az AH-ba kerül; 
+                                                    a 32 bites osztás marad 32 bites. A hányados az AX-be, a maradék az DX-be kerül
+
+    IDIV: cél, forrás - előjeles osztás, legrosszabb esetben 
+    CMP : érték1, érték2 - összehasonlítás, igazából elvégez egy kivonást, de az eredényt nem írja le,
+                                             viszont a flag regiszter-ben a zero ha 0, akkor egyenlő.
+
+
+    ADD pl:
+        ADD AX, 7 <- AX-ban tárolt értéket megnöveli 7-el
+        ADD [BX], AL <- ha cím van a célban, akkor is megy egy kis processzor oldali tánccal
+    
+    ADC pl:
+        ADC AL, BH <- simán összeadás, ha a carry bit 0, de ha 1, akkor +1et is hozzáteszi
+
+    SUB pl:
+        SUB AL, [SI] <- alap kivonás
+
+    SBB pl: 
+        SBB BH, DL <- kivonja a BH-ból a DL-t és még a carry bitet is.
+    
+    INC pl:
+        INC AX <- AX + 1
+
+    DEC pl:
+        DEC WORD PTR [BP] <- 16 bites jelzővel ellátott BP memeóriacímet eggyel csökkenti
+
+    NEG pl:
+        NEG SI <- SI-t kicseréli saját kettes komplemensével (SI * -1)
+
+    CMP pl:
+        CMP AL, 'i' <- nem kell hexázni betűkkel, bebaszod úgy mint más nyelvnél is és tudja magától a fordító
+
+Logikai utasítások
+    AND : cél, forrás - ÉS operátor, a cél-ban tárolja el az eredményt.
+    OR  : cél, forrás - VAGY operátor, a cél-ban tárolja az eredményt.
+    XOR : cél, forrás - Exkluzív VAGY, a cél-ban tárolja az eredményt.
+    TEST: cél, forrás - ÉS műveletet végzi el, de nem tárolja az eredményt, hanem a flag regiszterben jelzi.
+    NOT : cél         - Bitenkénti negálás, eredményt a célban tárolja.
+
+    AND pl:
+        AND AL, 00001111B <- Pl az AL-ben 01100011 van, és elvégezzük a műveletet, az AL-ben 00000011 lesz.
+
+    OR pl:
+        OR AL, 00001111B <- Pl az AL-ben 01100011 van, és elvégezzük a műveletet, az AL-ben 01101111 lesz.
+
+    XOR pl:
+        XOR AL, 00001111B <- Pl az AL-ben 01100011 van, és elvégezzük a műveletet, az AL-ben 011001100 lesz.
+
+    TEST pl:
+        TEST BH, 0FH <- Össze éseli a BH-t és a 0F hexát, majd az eredményt a flag regiszter jelzi.
+
+    NOT pl:
+        NOT AL <- Ah az AL = 00001111, az eredmény 11110000, amit az AL-ben tárol.
+
+(CS)IP-t módosító utasítások
+    JMP : cél - A cél-ra ugrik az IP, onnan fogja a következő utasítást olvasni. A cél nem egy konstans érték, hanem egy szimbólum.
+    CALL: cél - Szubrutin hívás, az elvégzett utasítások után kell egy RET (return) utasítás, hogy visszatérjünk. (Ha far rutin akkor RETF CS:IP)
+    INT : cél - Interrupt, megszakítás.
+    IRET: cél - Kiveszi a IP-t CRS-t és a flaget a stackből és visszatér a hívási pontjához. (van ahol RETI-nek nevezik)
+    INT3: cél - 1 byte-os INT. Good for debug.
+    INTO: cél - Akkor jön létre a megszkítás, ha az overflow flag jelez.
+
+    JMP pl:
+        JMP tovabb <- a tovabb-hoz ugrik a program (tovabb: kódkódkód).
+
+    CALL pl:
+        CALL tovabb <- a tovabb metódushoz ugrik, majd a RET-el visszalép oda ahonnan hívta.
+
+    INT pl:
+        INT 20H <- mentésre kerül a FLAG, CS, IP a STACK-ben, az I és T FLAG elemek nullázódnak, majd egy új CS:IP-t hoz be. (Ebben az esetben a 20 hexát)
+
+Feltételesen IP-t módosító utasítások
+    J   : [feltétel], utasítás - Igazából IF (Jump if). 
+
+          Lehet C (carry), NC (not carry), Z (equal), NZ (not equal), 
+          PO (páratlan, Parity Odd), PE (páros, Parity Even), S (Signed), NS (Not Signed), O (Overflow), NO (Not Overflow)
+          
+          Előjel nélüli => A (Above, >), AE (Above Equal, >=), B (Below, <), BE (Below Equal, <=).
+          Előjeles      => G (Greater), GE (Greater Equal), L (Less), LE (Less Equal)
+
+    LOOP: [] - CX-be betesz CX - 1-et és JCXNZ (Jump if CX not zero)
+
+    LOOP pl:
+        MOV CX, 5           CX-ben 5-el kezdünk, azaz a LOOP 5x fut le.
+
+        Vissza:
+            kód
+            kód
+            kód
+            LOOP Vissza     CX minden loopban csökken, akkor folyik tovább a program, ha a CX 0-t vesz fel. (DEC CX, JNZ Vissza)    
+            kód             JCXZ kikerülheti a loopot ha a CX 0.
+            kód
+            kód
+
+    JZ limitáció kikerülése csalással:
+        JZ Zoli => JNZ Csak
+                   JMP Zoli
+        Csak: (közeli)
+        Zoli: (Távoli, a JZ nem tud eddig ugrani, csak a JMP)
+
+Kis program példa:
+
+    MOV CX, 5           Végtelen ciklus, mert a Masod loop végén 0 lesz a CX és a DEC FFFFFF-re teszi.
+
+    Elso:
+        ---
+        ---
+        MOV CX, 13
+    
+    Masod:
+        ---
+        ---
+        LOOP Masod
+        ---
+        ---
+        LOOP Elso
+
+Helyesen:
+
+    MOV CX, 5
+
+    Elso:
+        ---
+        ---
+        PUSH CX
+        MOV CX, 13
+    
+    Masod:
+        ---
+        ---
+        LOOP Masod
+        POP CX
+        ---
+        LOOP Elso
+
+
+Léptető utasítások
+    SHL : cél, 1 - Shift Left. Az 1 az egy kötelező operandus, ez a 8080-nál csak 1 lehet, máshol már lehet több
+                   Minden bitet balra tol, majd a legalacsonyabb bit 0 lesz. Igazából 2-vel szorzás. A felső bit a carry-be kerül
+    SHR : cél, 1 - Shift Right. -||- a felső bit lesz 0, 2-vel osztás. A maradék a carry-be kerül
+    SAR : cél, 1 - Shift Arithmetic Right. A felső bit ugyanaz marad, hogy az előjel megmaradjon.
+    SAL : cél, 1 - Shift Arithmetic Left. Abszolút SHL.
+
+Forgató utasítások
+    ROL : cél, 1 - Rotate Left. Balra tol, majd a felső bit az alsó bitbe kerül.
+    ROR : cél, 1 - Rotate Right. Jobbra tol, majd az alsó bit a felsőbe kerül.
+    RCL : cél, 1 - Rotate with Carry Left. Balra forgat, a felső bit a carry-be kerül, a carry előző értéke pedig az alsó bitbe.
+    RCR : cél, 1 - Rotate with Carry Right. Jobrra forget, az alsó bit a carry-be kerül, a carry előző értéke pedig a felső bitbe.
+
+
+pl használatra
+
+   H      L
+[  8  ][  8  ] * 2
+  RCL    SHL        //RCL beteszi a carry-t alulra, amit a SHL kitolt felülről. pog
+
+Egyéb utasítások
+    NOP - No Operation, megállítja a programot.
+    CLI - Clear Interrupt
+    STI - Set Interrupt
+    CLD - Clear D flag
+    STD - Set D flag
+    HLT - Halt, megáll a processzor, az Interrupt ezt megtudja szakítanibe.
+    AAM - (ASCII adjust for Multiplication) Bináris korrekcióhoz kell.
+    CBW - Convert Byte to Word
+    CWD - Convert Word to DWord
+
+String kezelő utasítások
+    MOVS: cél, forrás - Move String (lehet MOVSB vagy MOVSW ugye word vagy byte)
+    CMPS: cél, forrás - Compare Strings. Kivonás alapján hasonlítja össze de igazából kit érdekel. Itt is van B meg W.
+    STOS: cél, forrás - Store String.  Itt is van B meg W. Betesz az AL/AX-ből az ES:[DI]-be.
+    LODS: cél, forrás - Load String. Itt is van B meg W. Kivesz a DS:[SI]-ből AL/AX-be
+    SCAS: cél, forrás - Scan And Sling. Itt is van B meg W. Összehasonlítja az AL/AX-et ES:[DI]-vel.
+
+    REP - Repeat, REPE = Repeat Equal, REPNE = Repeat Not Equal, REPNZ = Repeat Not Zero, A REP az egy prefix.
+
+    MOVS pl:
+        MOVS ES:[DI], DS[SI] <- ES:[DI]-be beleteszi a DS[SI]-t, a DI-be a DI +- 1 vagy 2-t (byte vagy word), SI-be az SI +- 1 vagy 2-t
+                                + ha a D flag = 0, - ha a D flag = 1
+
+
+String másoló program           Elso LABEL BYTE [ 37 ]     Masod LABEL BYTE
+
+MOV SI, OFFSET Elso
+MOV DI, OFFSET Masod
+MOV CX, 37
+
+Cik:
+    MOV AL, [SI]
+    MOV [DI], AL
+    INC SI
+    INC DI
+    LOOP Cik
+
+    Az egész ciklust helyettesíteni lehet egy [REP MOVSB]-vel
