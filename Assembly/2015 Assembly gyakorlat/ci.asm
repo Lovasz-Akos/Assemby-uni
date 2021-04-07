@@ -1,0 +1,37 @@
+code	segment para	public	'code'
+
+assume cs:code, ds:code, es:nothing, ss:nothing
+
+	org	100h
+
+
+start:
+        mov     ax,3                    ; KÇrÇs Çs m¢d be†ll°t†s
+        int     10h                     ; A Video BIOS h°v†sa
+        mov     dx,offset suokis        ; A szîveg c°me
+        mov     ah,9                    ; A ki°rat†s kÇrÇs k¢dja
+        int     21h                     ; A DOS h°v†sa szîvegki°rat†sra
+        mov     cx,10                   ; Ennyi leÅtÇst v†rok
+varako:
+        mov     ah,8                    ; LeÅtÇs beolvas†s nÇm†n k¢dja
+        int     21h                     ; DOS h°v†sa leÅtÇsv†r†sra 
+        cmp     al,27                   ; êppen az ESC volt?
+        jz      befeje                  ; Igen, akkor ki is lÇpek
+        cmp     al,'q'                  ; êppen a 'q' volt?
+        jz      befeje                  ; Igen, akkor ki is lÇpek
+        cmp     al,'Q'                  ; êppen a 'Q' volt?
+        jz      befeje                  ; Igen, akkor ki is lÇpek
+        mov     dl,al                   ; DL <- ki°ratand¢ karakterd
+        mov     ah,2                    ; A ki°rat†s kÇrÇs k¢dja
+        int     21h                     ; A DOS h°v†sa szîvegki°rat†sra
+        loop    varako                  ; Ha maradt mÇg, visszamegy
+befeje:
+	mov	ah,4ch
+        int     21h
+                                                
+suokis  db      'öss le 10 db billenty˚t!',13,10,'$'
+
+code	ends
+	end	start
+
+                      

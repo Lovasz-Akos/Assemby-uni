@@ -1,0 +1,122 @@
+Üdvözlöm Önöket!
+A mai alkalommal a TASZTATÚRA megszakítás konkrét használatáról
+lesz szó.
+Az ASM_PREZ.PDF fájl 25. oldala érinti ezt a témát.
+A használandó megszakítás a 16H. Három féle paraméterérõl
+érdemes tudni. valójában a paraméterek száma 6, de a két
+féle XTZ-s és AT-s) tasztatúra köréban ugyan azt a funkciót lehet
+elérni, hívni, csak az egyik, vagy másik körben használva.
+az XT-s tasztra vonatkozó érték elsõ lépése az AH-ba 0-t
+töltve hívható. A 101 gombos (most használatos) tasztnál 10H-val
+többet kell betölteni, és ugyan azt az elvi funkciót kapjuk.
+A 0-ás kód hasonlít a DOS 8-as funkciójához, azaz vár egy
+gombnyomást a tasztatúrán, majd AL-ben visszadja annak ASCII
+kódját a visszatéréskor.
+Ami nagyobb érdeklõdést vonhat maga után az az 1-es (11H) funkció.
+Ez csak tájékoztat arról, hogy várakozik-e beolvasásra leütés,
+vagy nem. Visszatérés után a Zéró flag bit jelzi, hogy melyik
+állapot aktuális. Ha a Zéró flag 1-es (azaz 0-t jelez) nincs
+feldolgozandó leütés. Ha a flag 0 (nem 0-t jelez) akkor van
+feldolgozandó leütés.
+Ezt a funkciót akkor szükséges használni, ha nem akarunk várni
+egy leütésre, mert van más teendõnk is. Például ha az egér
+gombjainak állapotát ki akarom írni, folyamatosan figyelve,
+hogy van-e változás, de ESC-re ki kívánok lépni a programból,
+akkor nem várakozhatok a leütésre, hiszen akkor nem tudom a
+33H megszakítás hívással figyelni a gombok állapotát.
+Így a fenti (1 vagy 11h) hívással csak arról tájékozódom, hogy
+volt-e leütés, ha nem akkor "megyek tovább". :-)
+Az ezt megvalósító programrész ad némi tájékoztatást az érintett
+mód használatáról:
+;
+;
+; Ha volt leütés, a beolvasásra mindenképp kerítsünk sort, bár a
+; hívás téjékoztat AL-ben arról, hogy mi volt a leütés, de ha
+; mondjuk nem olvassuk be, akkor mindig az elsõ (még fel nem
+; dolgozott) leütés kódját adja vissza hiba folytattuk a
+; leütéseket tovább.
+;
+	mov ah,1			; Viszgálat leütésre kódja
+	int 16h				; A tasztatúra BIOS hívása
+	jz nemvol			; Ha nem volt leütés ugrok
+;
+; Most már jöhet a "várakozós" funkció, hiszan már biztos, hogy
+; volt leütés, azaz ez a hívás azonnal visszatér, mert nem kell
+; várakozni gombnyomásra, mert az már megtörtént. A kód a 0,
+; vagy a 10H lehet.
+;
+	mov ah,0			; Beolvasás kódja
+	int 16h				; A tasztatúra BIOS hívása
+	cmp al,1bh			; A leütés az ESC volt?
+	jz kilep			; Igen, az volt, kilépek
+;
+; Ha nem volt leütés, vagy az nem ESC volt, itt folytatja
+;
+nemvol:
+	mov ax,2			; Egérállapot beolvasás kódja
+	int 33h				; Egérdriver hívása.
+
+A gyakorlati feladatokban még egy kódot érdemes használni. Az
+AH-ba 2-t (12h-t) töltve visszakapjuk (azonnal) a kontrol
+billentyûk állapotát az AL-ben. A bitek jelentése, kiosztása az
+alábbiak szerint történik 0-ás hívásnál:
+0-ás bit -> jobb Shift billentyû állapota
+1-es bit -> bal Shift billentyû állapota
+2-es bit -> CTRL billentyû(k) állapota
+3-as bit -> ALT billentyû(k) állapota
+4-es bit -> ScrollLock állapot
+5-ös bit -> NumLock állapot
+6-os bit -> CapsLock állapot
+7-es bit -> Insert állapot
+A 12H hívásnál lekérdezhetõ a két CTRL és a két ALT
+billentyû állapota. AL kiaosztása itt az alábbi:
+0-ás bit -> bal CTRL billentyû állapota
+1-es bit -> bal ALT billentyû állapota
+2-es bit -> jobb CTRL billentyû állapota
+3-as bit -> jobb ALT billentyû állapota
+4-es bit -> ScrollLock állapot
+5-ös bit -> NumLock állapot
+6-os bit -> CapsLock állapot
+7-es bit -> SysReq állapot
+
+Ehhez kapcsolódó feladat a KP.DOC szerint:
+16. oldal 31-es feladat (3-as feladat)
+7. oldal 62-es feladat (4-es feladat)
+7. oldal 63-as feladat (4-es feladat)
+
+A "lassítás"-hoz a következõ programrészt kell a
+saját processzorsebességhez igazítva "kitalálni". :-)
+;
+; Egy dupla ciklust kell írni, ami csak annyiban
+; más különbözõ processzor sebesség értékeknél,
+; hogy hányszor fut "fölöslegsen" le a ciklus
+; Az én gépemen az alábbi kódrész volt "megfelelõ".
+;
+	mov cx,5				; Ennyi a külsõ ciklus darabszáma
+						; az én processzoromnál
+kulcik:
+	push cx					; Késõbbre
+	xor cx,cx				; CX <- 0, azaz 65536 belsõ ciklus
+belcik:
+	mov ah,1				; Leütésvizsgálat kódja
+	int 16h					; Tasztatúra BIOS hívása
+	jz nevose				; Nem volt leütés
+	mov ah,0				; Beolvasás kódja
+	int 16h					; Tasztatúra BIOS hívása
+	cmp al,1bh				; ESC volt?
+	jz kilep				; Igen, befejeztem
+nevose:
+	mov ah,2				; Státusz vizsgálat kódja
+	int 16h					; Tasztatúra BIOS hívása
+;
+; Itt volt a tasztatúra státusz kiértékelése
+;
+	loop belcik				; A belsõ ciklusba vissza
+	pop cx					; Vissza a CX
+	loop kulcik				; A külsõ ciklusba vissza
+
+;
+
+
+
+Eredményes tananyag elsajátítást.

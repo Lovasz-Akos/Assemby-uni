@@ -1,0 +1,26 @@
+                              Gabor Denes Foiskola
+                                 Assembly (108)
+                           3. evfolyam, 6. szemeszter
+                                    2003/2004
+----------------------------------------------------------------------------
+
+(Ez a szovegfajl nem tartalmaz ekezetes betuket, hogy mind DOS, mind Windows
+alatt olvashato legyen.)
+
+Az ASSEMBLY.ZIP fajl tartalma:
+
+  ASM_PREZ.PDF - az eloadas prezentaciojat tartalmazza. Olvasasahoz Acrobat
+                 Reader szukseges (legalabb 3.0-s verzio).
+                 A 8 oras videofilm 90%-ban ezt tartalmazza, de a .PDF fajl a
+                 legfrissebb, legbovebb (2001/2002-es).
+                 Nyomtataskor egy lapra 8 oldal kerul (papirtakarekos).
+  ASM_UTM2.DOC - A Tantargyi Utmutato tovabbi resze (tananyagot tartalmaz).
+  GRDEMO#.EXE  - az eloadasokon felhasznalt 4 bemutato program (onkicsomagolo)
+  ASM_PEL#.EXE - onkicsomagolo fajl, kb. 30 egyre nehezedo Assembly
+                 peldaprogramot tartalmaz (forras es futtathato formaban).
+  GYAK_PL#.EXE - a gyakorlatokon megbeszelt peldaprogramok (onkicsomagolo)
+
+Budapest, 2004. januar 13.                                  ,
+                                                            Agoston Gyorgy
+                                                             (1) 436-6556
+                                                           agoston@gdf-ri.hu

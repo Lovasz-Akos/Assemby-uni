@@ -1,0 +1,28 @@
+Üdvözlöm Önöket!
+A mai alkalommal a parancssor használat lesz a téma.
+A COM állományok rövid szerkezeti felépítését leírja
+az ASM_PREZ.PDF állomány 19.oldala. A szerkezetét
+a 22. oldalon látható írás mutatja be.
+A 80h címen tehát a parancssor bájtjainak száma
+található a határoló karakterel együtt. Mivel a
+DTA hossza 80h (128) ezért a határoló (81h) után
+legfeljebb 7dh (125) bájtnyi parancs karakter lehet,
+mert a végére kitesz egy "Enter"-t (0dh) is, ami
+viszont a hosszba nem számít bele.
+Két módon tudjuk használni. Az egyik, hogy ismerve a
+DTA címét (80h), direkt címzéssel megcímezzük,
+(PSA.ASM) vagy az ORG direktívával kialakítjuk a
+szerkezetét. (PSB.ASM)
+A mintaprogram két verziója ebben fog eltérni,
+valamint a számítás módjában is mutat eltérést.
+A feladat amin keresztül a parancssor kezelés (is)
+látható: Adjuk meg parancssorban hogy 2+4 amire
+a program kiírja 2+4=6. Mondjuk a program neve
+legyen "psa", akkor a parancsor pl.: psa 0+7
+amire kiírja: 0+7=7
+Az eredmény maximum 9 legyen, hibajelzés ha a
+parancssor szerkezete nem jó.
+Természetesen most is rendelkezésükre állok
+a 70 503-9110-en akár Viber-en, akár telefonon
+keresztül.
+Eredményes tananyag elsajátítást.

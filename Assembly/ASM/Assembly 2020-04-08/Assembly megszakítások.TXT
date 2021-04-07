@@ -1,0 +1,61 @@
+Üdvözlöm Önöket!
+A mai alkalommal a megszakításokról lesz szó.
+Az ASM_PREZ.PDF fájl 14. és 15. oldaláõn van errõl szó.
+Azaz az operációs rendszer memóriájának abszolút 00000H
+címén (5 hexa digit, 20 bit!) található (a RAM-ban) 256
+CS:IP páros adja sorban a 0-ás megszakítástól a 255-ös
+megszakításig a 256 megszakítás vektorcím-páros értékeit.
+Amikor a pl. (a gyakorlaton már megszokott) INT 21H
+utasítást használjuk, akkor a processzor elmenti a flag,
+a CS és az IP értékeket a stcak-be (3x2 bájt), majd a
+flag regiszterben törli (a késõbb megbeszélésre kerülõ)
+megszakítás és trap flageket, a CS:IP értéket pedig
+betölti a a memória 21H * 4 címén található 4 bájtból,
+azaz a beolovasott CS:IP értéknél fogja a következõ utasítást
+végrehajtani. Visszatérés az IRET utasítás hatására fog
+megtörténni.
+Az INT 00h speciális felhasználásra ven kialakítva. Az osztás
+utasításnál (DIV, IDIV) az osztás túlcsordulás detektálásakor
+fog aktíválódni.
+Mivel a megszakítás vektorok RAM-ban vannak, természetes meg
+is lehet azokat változtatni.
+
+Két szóbeli kérdés  foglalkozik e támakörrel:
+
+Hogyan tudunk memóriarezidens programokat írni DOS operációs
+rendszernél? Hogyan jut „szóhoz” a memóriarezidens program
+miután „kilépett”?
+Mutassa be az XT megszakítási rendszerét! Milyen módon
+lehet megszakítás-kezelõ programot írni DOS operációs
+rendszerben?
+
+A memória rezidens program ad lehetõséget (DOS-ban) arra,
+hogy egy általunk írt program extra feladatai is
+rendelkezésre álljanak - késõbb - más programok számára.
+A program inicializáló része elõkészíti a rezidens rész
+számára a lehetõséget, majd úgy lép ki, hogy jelzi az
+operációs rendszernek, hogy kilép ugyan, de a megadott
+memória mennyiséget ne szabadítsa fel a program
+területébõl, mert annak funkciója van.
+Azért tud a - bennmaradó - program mûködni, mert az
+inicializáló rész egy vagy több megszakítást átírányit
+"saját magára" azaz a rezidens részre. Így mûködött
+hajdan a soros portra csatlakozó egér drivere is.
+Magára irányította a soros port (hardver) megszakítását,
+és így a soros porton jövõ egérállapot változásról szóló
+üzeneteket fel tudta dolgozni. Magára irányította a
+Video BIOS (10h) megszakítását is, így az egér kurzort
+megjelenítette amikor arra volt szükség.
+A 33H megszakítás is rá lett íránítva, azaz feladatokat
+értelmezni tudta.
+A megszakítás rendszerét az PDF 15. oldalán lévõ ábra
+mutatja be. (Az IBM PC-AT rendszer látszik ott.)
+A készítés módját az elõzõek szerint lehet leírni, azaz
+a program inicializáló része átírányít egy vagy több
+megszakítást (a vektortáblában) a rezidensen maradó
+részre, majd jelezve a rezidens rész hosszát kilép.
+
+Természetesen most is rendelkezésükre állok
+a 70 503-9110-en akár Viber-en, akár telefonon
+keresztül.
+Eredményes tananyag elsajátítást.

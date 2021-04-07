@@ -1,0 +1,50 @@
+Tisztelt Hallgatók!
+A mai napon a grafikus üzemet fogjuk áttekinteni.
+Az ASM_PREZ.PDF fájl a 20-22 oldalon foglalkozik a témával.
+Számunkra az úgynevezett MCGA üzemmód az amihez a gyakorlatok
+kapcsolódnak. Az MCGA üzemmódot hasonlóan a 80x25-ös színes
+karakteres üzemmódhoz a 10H megszakítás hívásával tudjuk
+elindítani/beállítani.
+Természetesen a gyakorlati használat során a programnak a
+kilépés elõtt vissza kell állítani a karakteres üzemmódot,
+különben a továbbiakban a parancssor nem lenne látható. :-)
+Az MCGA üzemmód használatához vezetõ kód 13H.
+	mov ah,13h		; MCGA üzem kérés kódja
+	int 10h			; Videó BIOS hívás
+A grafikus felület ennél a módnál 320x200 pont. Ez még
+"belefér" a 64000 miatt az egy 64K-s szegmensbe.
+A szegmens az A000 hexa értékkel jellemzett. A szegmensen
+belül minden ponthoz egy bájt tartozik. Balról jobbra
+történik a hozzárendelés, azaz a bal felsõ pont címe 0,
+az alatta lévõ pontz pedig 320.
+Ebbõl következik, hogy egy idõben a színek száma legfeljebb
+256 lehet. :-)
+A bájt értéke adja meg, hogy melyik "számú" színt fogja az
+a pont megjeleníteni. A színt bármikor meg lehet változtatni,
+így a kijelzés közben is átalakulhat a kép, ha az aktív
+szín összetevõit megváltoztatjuk.
+A szín konkrét értékét 0-63 közötti RGB érték megadásával
+választhatjuk/állíthatjuk be.
+a szín számát a 3c8h I/O címen állíthatjuk be, a hozzá
+tartozó RGB értéket a 3c9h I/O címen. A módváltás után
+csak egy szín kap értéket, a 0-ás, az fekete lesz,
+azaz ez lesz a háttérszín. Azaz az A000H szegmens minden
+bájta 0, (0-ás szín) és a fekete színösszeállítás
+okán "üres" (fekete) képernyõ.
+Ha "mongyuk" a háttér színét meg akarjuk változtatni:
+	mov ah,13h		; MCGA üzem kérés kódja
+	int 10h			; Videó BIOS hívás
+	mov dx,3c8		; A színszám regiszter címe
+	mov al,0		; A szín száma (háttér)
+	out dx,al		; Elküldöm a szín számá
+	inc dx			; DX <- 3c9h
+	mov al,63		; A piros (R) intenzitása 0..63
+	out dx,al		; Piros elküldve (63)
+	mov al,0		; A zöld (G) intenzitása 0..63
+	out dx,al		; Zöld elküldve (0)
+	out dx,al		; Kék elküldve(0)
+és a háttér "nagyon" piros lesz.
+A mintaprogram amit mellékelek a kp.doc 7. oldal 57-es
+feladata.
+Eredményes tananyag elsajátítást
+Keresztes Péter (pluszs)
