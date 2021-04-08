@@ -330,3 +330,62 @@ Cik:
     LOOP Cik
 
     Az egész ciklust helyettesíteni lehet egy [REP MOVSB]-vel
+
+
+
+Programsorok felépítése
+
+[ label ]parancs/utasítás    paraméter/operandus      ;komment
+
+Megszakítás címek:
+
+    10H - Video
+    16H - Bill
+    21H - DOS
+    33H - Egér
+
+    Használat pl: INT 16H
+
+Képernyőtörlés:   
+    
+    MOV AH, 0  <- mód beállítás kódja 0
+    MOV AL, 3  <- 80*25 karakteres kép üzemmód, annak kódja 3
+    INT 10H    <- video interrupt, végrehajtja amit az AH, AL-ben talál. (azaz 3-as módra beállítás). Igazából egy utasítással is lehet törölni: MOV AX, 3
+
+Direktívák, azaz a fordítónak szóló utasítások:
+
+    DB 6, 0BH, 11B, -8, 'A' - Define Byte
+    DW - Define Word
+    DD - Define Double Word
+    DQ - Define Quad Word
+    DT - Define Ten Byte
+
+    pl: szoveg DB 'hello world$' <- a 'szoveg'-el lehet rá hivatkozni. a $ jelzi a string végét, így lehet megakasztani a kiírást pl.
+
+Képernyőre kiírás:
+
+    MOV DX, OFFSET szoveg <- a 'szoveg' amit előbb definiáltam.
+    MOV AH, 9 <- 9es kód a képernyőre írás, a DX-ről ír ki.
+    INT 21H
+
+    Kiírásnál kódok: 13 - kocsi vissza, 10 - soremelés
+    
+    szoveg  DB 'hello world$'13,10
+            DB 'wazzap$'
+
+Karakter beolvasás:
+
+    MOV AH, 1 <- 1 a beolvasás kódja, egyetlen karakterre, beteszi a leütött bill kódját az AL-be, és látni a képen hogy mit nyomsz le.
+    INT 21H
+
+    MOV AH, 8 <- ugyanaz mint az 1, csak nem jelenik meg a karakter a képernyőn
+    INT 21H
+
+Egér funkciók
+
+    MOV AX, 1 <- az 1 az egér kurzor mutatás, a 2 az elrejtés
+    INT 33H
+
+    MOV AX, 3 <- Egér jelenlegi állapotának bekérése: hol van és a gombok állapota., a helyet amit visszaad, el kell osztani 8al.
+    INT 33H
+                BX-ben tárolja a gombok állapotát, CX-ben a pozíció sorát, DX-ben a pozíció oszlopát
