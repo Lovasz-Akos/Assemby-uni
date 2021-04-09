@@ -6,8 +6,8 @@ assume cs:code, ds:code, es:nothing, ss:nothing
 
 
 start:
-	mov ah,4c					;kil‚p‚s
-	int 21h						;dos kil‚p‚s
+	mov ah,4ch					;kilï¿½pï¿½s
+	int 21h						;dos kilï¿½pï¿½s
 
 code	ends
 	end	start
