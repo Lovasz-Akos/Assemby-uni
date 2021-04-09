@@ -12,7 +12,7 @@ start:
     mov ah,9
     mov dx, offset szia
     int 21h
-    mov cx,5                    ;ennyi karaktert v runk, (5)
+    mov cx,5                    ;ennyi karaktert vï¿½runk, (5)
     mov si,offset nevtar        ;ide tarolja a nevet
 
     mov ah,1                    ;echo-s beolvas
@@ -20,7 +20,7 @@ karvar:
     int 21h
     mov [si],al                 ;kiteszem az olvasott karaktert az si altal cimzett tarba, azaz a nevtar offsetbe
     inc si                      ;kovetkezo karaktert ne ugyanoda irja
-    loop karvar                 ;karakter v r s ciklusba
+    loop karvar                 ;karakter vï¿½rï¿½s ciklusba
 
     mov ah,9
     mov dx, offset hello
@@ -38,10 +38,10 @@ karkit:
     jmp exit
 
 exit:
-	mov ah,4ch					;kil‚p‚s
-	int 21h						;dos kil‚p‚s
+	mov ah,4ch					;kilï¿½pï¿½s
+	int 21h						;dos kilï¿½pï¿½s
 
-szia db 'Hogy h¡vnak? $'
+szia db 'Hogy hï¿½vnak? $'
 hello db 13,10,'Szia, $'
 nevtar db ?,?,?,?,?
         db '!$'
