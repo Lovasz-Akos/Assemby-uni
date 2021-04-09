@@ -6,8 +6,11 @@ assume cs:code, ds:code, es:nothing, ss:nothing
 
 
 start:
-	mov ah,4ch					;kilï¿½pï¿½s
-	int 21h						;dos kilï¿½pï¿½s
+	mov ax,3					;80x25 konzol setup
+	int 10h						;video bios interrup
+	
+	mov ah,4ch					;kil‚p‚s
+	int 21h						;dos kil‚p‚s
 
 code	ends
 	end	start
