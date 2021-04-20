@@ -13,7 +13,7 @@ start:
     mov dx,offset szambe
     int 21h
 
-    mov ah,1                    ;silent read
+    mov ah,1                    ;visible read
     int 21h
     ;cmp al,13                   ;if enter
     ;jz  hibair
@@ -54,8 +54,8 @@ hibair:
     jmp kilepes
 
 kilepes:
-	mov ah,4ch					;kil‚p‚s
-	int 21h						;dos kil‚p‚s
+	mov ah,4ch					;kilï¿½pï¿½s
+	int 21h						;dos kilï¿½pï¿½s
 
 szambe db 'Kerek egy szamot: $'
 hibauz db 13, 10, 'Hibas szam!$'
