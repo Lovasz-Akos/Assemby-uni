@@ -3,7 +3,8 @@ code	segment para	public	'code'
 assume cs:code, ds:code, es:nothing, ss:nothing
 
 
-;
+;9-string writer, 8-silent read, 
+;2-single write, 1-visible read, 
 	org	100h
 ;
 start:
@@ -29,3 +30,18 @@ txtlen	EQU	$ - amitki			; Meghatározom a szöveg hosszát
 code	ends
 	end	start
 
+
+;also here's the number converter
+mov bx,'99'
+
+dec bl						;}
+	cmp bl,'0'				;|
+	jae blrend				; >	ha 0-t elerte az also szamjegy, felteszi 9re es a felso szamjegyet csokkenti
+	mov bl,'9'				;|
+	dec bh					;}
+
+blrend:
+	mov ah,8				;silent read
+	int 21h
+	cmp al,27				;if esc
+	jnz ciklus				;mehet tovabb
