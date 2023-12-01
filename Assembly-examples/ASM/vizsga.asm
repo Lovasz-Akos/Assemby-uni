@@ -8,9 +8,9 @@ assume cs:code, ds:code, es:nothing, ss:nothing
 start:
 	mov ax,3					;80x25 konzol setup
 	int 10h						;video bios interrup
-    
+
     mov ah,9					;string write
-    mov dx,offset tajeko        
+    mov dx,offset tajeko
     int 21h                     ;kiirja a tajekoztatot
 
     mov bl, 00000000b
@@ -18,7 +18,7 @@ start:
 ciklus:
     mov ah, 1
     int 21h
-    
+
     cmp al, 'a'
     jz leuta
     cmp al, 'b'
@@ -45,10 +45,10 @@ done:
     jnz ciklus
 
 kilep:
-	mov ah,4ch					;kil‚p‚s
-	int 21h						;dos kil‚p‚s
+	mov ah,4ch					;kilÃ©pÃ©s
+	int 21h						;dos kilÃ©pÃ©s
 
-tajeko db 'A program akkor ‚r v‚get, ha az ABC betûket b rmilyen sorrendben leti', 13,10, '$'
+tajeko db 'A program akkor Ã©r vÃ©get, ha az ABC betÅ±ket bÃ¡rmilyen sorrendben leÃ¼ti', 13,10, '$'
 
 code	ends
 	end	start
